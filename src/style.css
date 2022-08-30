@@ -1,0 +1,68 @@
+* {
+    margin: 0;
+    padding: 0;
+    font: inherit;
+    box-sizing: border-box;
+}
+
+:root {
+    --text-color: white;
+    --bg-color: #475569;
+    --primary-color: #0f172a;
+    --secondary-color: hsl(339, 66%, 33%);
+}
+
+body {
+    color: var(--text-color);
+    background-color: var(--bg-color);
+}
+
+/* header */
+header {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    font-size: 50px;
+    background-color: var(--primary-color);
+    height: 10vh;
+    padding: 50px;
+}
+
+/* main */
+main {
+    display: flex;
+    gap: 20px;
+
+}
+
+.sidebar {
+    flex-grow: 1;
+    height: 100vh;
+    background-color: var(--secondary-color);
+}
+
+
+
+/* task card */
+.tasks {
+    flex-grow: 5;
+    padding: 20px;
+}
+
+.task {
+    background-color: var(--secondary-color);
+    border-radius: 1rem;
+    padding: 20px;
+    margin-bottom: 20px;
+    font-size: 20px;
+    width: 30%;
+
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.left-task-panel {
+    display: flex;
+    gap: 10px;
+}
