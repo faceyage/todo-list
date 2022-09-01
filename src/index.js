@@ -1,33 +1,203 @@
 import "./style.css";
 import ToDoList from "./todo_list";
+import { add, addDays } from "date-fns";
 
-function renderComponents() {
-    // header
-    const header = document.querySelector("header");
-
-    const logo = document.createElement("div");
-    logo.classList.add("logo");
-    logo.textContent = "Todo List"
-    header.appendChild(logo);
+class Page {
+    renderComponents() {
+        // header
+        const header = document.querySelector("header");
     
-    //main
-    const main = document.querySelector("main");
+        const logo = document.createElement("div");
+        logo.classList.add("logo");
+        logo.textContent = "Todo List"
+        header.appendChild(logo);
+        
+        //main
+        const main = document.querySelector("main");
+    
+        //main sidebar
+        const sidebar = document.createElement("div");
+        sidebar.classList.add("sidebar");
+        main.appendChild(sidebar);
+        
+        const home = document.createElement("button");
+        home.classList.add("btn")
+        home.textContent = "Home";
+        home.onclick = () => {
+            toDoList.currentProject = "home";
+            toDoList.getProjectTasks("home")
+        };
+        sidebar.appendChild(home);
 
-    const sidebar = document.createElement("div");
-    sidebar.classList.add("sidebar");
-    main.appendChild(sidebar);
+        const today = document.createElement("button");
+        today.textContent = "Today";
+        today.classList.add("btn");
+        today.onclick = () => toDoList.getTodaysTasks();
+        sidebar.appendChild(today)
+    
+        const thisWeek = document.createElement("button");
+        thisWeek.textContent = "This Week";
+        thisWeek.classList.add("btn");
+        thisWeek.onclick = () => toDoList.getThisWeekTasks();;
+        sidebar.appendChild(thisWeek);
 
-    const tasks = document.createElement("div");
-    tasks.classList.add("tasks");
-    main.appendChild(tasks);
+        const projectsText = document.createElement("div");
+        projectsText.textContent = "Projects"
+        projectsText.classList.add("projectsTitle");
+        sidebar.appendChild(projectsText);
+
+        toDoList.getProjectNames(true).forEach((projectName) => {
+            const project = document.createElement("button");
+            project.classList.add("userProject");
+            project.classList.add("btn");
+            project.textContent = projectName;
+            project.onclick = () => {
+                toDoList.currentProject = projectName;
+                toDoList.getProjectTasks(projectName);
+            }
+            sidebar.appendChild(project);
+        });
+
+        const addTaskCard = this.addTaskCard();
+        document.body.appendChild(addTaskCard);
+        
+        const detailTab = this.#detailTab();
+        document.body.appendChild(detailTab);
+
+        const addBtn = document.createElement("button")
+        addBtn.textContent = "+";
+        addBtn.classList.add("btn");
+        addBtn.id = "addBtn";
+        addBtn.onclick = () => addTaskCard.classList.contains("hide") ? addTaskCard.classList.remove("hide") : addTaskCard.classList.add("hide");
+        sidebar.appendChild(addBtn);
+
+        const tasks = document.createElement("div");
+        tasks.classList.add("tasks");
+        main.appendChild(tasks);
+    }
+
+    #detailTab() {
+        const detailsCard = document.createElement("div");
+        detailsCard.classList.add("detailsCard");
+        detailsCard.classList.add("hide");
+
+        ["project", "title", "due_date", "detail"].forEach((name) => {
+            const info = document.createElement("div");
+            info.classList.add(`details-tab_${name}`);
+            const text = document.createElement("span");
+            text.textContent = `${name}:`;
+            const value = document.createElement("span");
+            info.appendChild(text);
+            info.appendChild(value);
+            
+            detailsCard.appendChild(info);
+        });
+        
+         
+
+        return detailsCard;
+    }
+
+    addTaskCard() {
+        const addTaskCard = document.createElement("div");
+        addTaskCard.classList.add("addTaskCard");
+        addTaskCard.classList.add("hide");
+
+        const addNewHeader = document.createElement("div");
+        addNewHeader.classList.add("header");
+        addTaskCard.appendChild(addNewHeader);
+
+        const title = document.createElement("div");
+        title.id = "add-new-text";
+        title.textContent = "Add new..";
+        addNewHeader.appendChild(title);
+
+        const button_wrapper = document.createElement("div");
+        button_wrapper.classList.add("add_buttons");
+        addNewHeader.appendChild(button_wrapper);
+
+        const addTaskBtn = document.createElement("button");
+        addTaskBtn.classList.add("btn");
+        addTaskBtn.textContent = "Task";
+        button_wrapper.appendChild(addTaskBtn);
+
+        const addProjectBtn = document.createElement("button");
+        addProjectBtn.classList.add("btn");
+        addProjectBtn.textContent = "Project";
+        button_wrapper.appendChild(addProjectBtn);
+        
+        const _sideBar =  document.createElement("div");
+        _sideBar.classList.add("sideBar");
+        addTaskCard.appendChild(_sideBar)
+
+        const form = document.createElement("form");
+        form.id = "addTaskForm"
+        addTaskCard.appendChild(form);
+
+        const inputs = []
+        inputs.push(["Title", "title", "text", true])
+        inputs.push(["Description", "desc", "text", false]);
+        inputs.push(["Due Date", "dueDate", "date", true]);
+        
+        inputs.forEach((input) => {
+            const newInput = this.createInput(input[0], input[1], input[2], input[3]);
+            form.appendChild(newInput);
+        });
+
+        const submitBtn = document.createElement("button");
+        submitBtn.classList.add("btn");
+        submitBtn.textContent = "Add";
+        form.onsubmit = (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const title = formData.get("title");
+            const desc = formData.get("desc");
+            const date = formData.get("dueDate");
+            toDoList.createTask(title, desc, date, "high");
+            //reset form
+            form.reset();
+            addTaskCard.classList.add("hide");
+        }
+
+        form.appendChild(submitBtn);
+        
+        return addTaskCard;
+    }
+
+    createInput(title, id, type, isRequired) {
+        console.log(`Title: ${title} ID: ${id} type: ${type}`)
+        const wrapper = document.createElement("div");
+
+        const label = document.createElement("label")
+        label.setAttribute("for", id);
+        label.textContent = title;
+        wrapper.appendChild(label);
+
+        const input = document.createElement("input");
+        input.name = id;
+        input.id = id;
+        input.type = type;
+        if (isRequired) {
+            input.setAttribute("required", "");
+        }
+        wrapper.appendChild(input);
+        
+        return wrapper;
+    }
 }
 
-renderComponents();
-const toDoList = new ToDoList();
-toDoList.createTask("Math Homework", "Do the math homework page 126 - 205", "30/08/2022", "low", true);
-toDoList.createTask("Cook Dinner", "Do the math homework page 126 - 205", "30/08/2022", "high");
-toDoList.createTask("Cook Dinner", "Do the math homework page 126 - 205", "30/08/2022", "high");
-toDoList.createTask("Cook Dinner", "Do the math homework page 126 - 205", "30/08/2022", "high");
-toDoList.createTask("Cook Dinner", "Do the math homework page 126 - 205", "30/08/2022", "high");
 
-console.log(toDoList.getProjectNames());
+function addSomeTasks(toDoList) {
+    toDoList.createTask("Cook Dinner", "Do the math homework page 126 - 205", "2022/09/01", "high", true);
+    toDoList.createTask("Do Bath", "Do the math homework page 126 - 205", "2022/09/01", "high", true);
+    toDoList.createTask("Math Homework", "Do the math homework page 126 - 205", "2022/08/30", "low");
+    toDoList.createTask("Clean the House", "Do the math homework page 126 - 205", "2022/09/02", "medium");
+    toDoList.createTask("10 Push-UP", "Do the math homework page 126 - 205", "2022/09/16", "high", false, "GYM");
+    toDoList.createTask("Make JOY", "Do the math homework page 126 - 205", "2022/09/16", "high",false, "Study");
+}
+const toDoList = new ToDoList();
+toDoList.createProject("Study");
+toDoList.createProject("GYM");
+const page = new Page();
+page.renderComponents();
+addSomeTasks(toDoList);
