@@ -99,6 +99,7 @@ class Task {
     #completeTask() {
         this.done = !this.done;
         this.#logTask();
+        toDoList.saveLocalStorage();
     }
 
     #changeDueDate(inputDueDate, textDueDate) {
@@ -106,6 +107,7 @@ class Task {
         textDueDate.textContent = format(this.dueDate, 'dd/MM/yyyy');
         inputDueDate.classList.add("hide");
         textDueDate.classList.remove("hide");
+        toDoList.saveLocalStorage();
     }
 
     #logTask() {
