@@ -46,17 +46,10 @@ class Page {
         projectsText.classList.add("projectsTitle");
         sidebar.appendChild(projectsText);
 
-        toDoList.getProjectNames(true).forEach((projectName) => {
-            const project = document.createElement("button");
-            project.classList.add("userProject");
-            project.classList.add("btn");
-            project.textContent = projectName;
-            project.onclick = () => {
-                toDoList.currentProject = projectName;
-                toDoList.getProjectTasks(projectName);
-            }
-            sidebar.appendChild(project);
-        });
+        const projectsContainer = document.createElement("div");
+        projectsContainer.classList.add("projects");
+        sidebar.appendChild(projectsContainer);
+        toDoList.renderProjects();
 
         const addTaskCard = this.addTaskCard();
         document.body.appendChild(addTaskCard);
@@ -68,7 +61,10 @@ class Page {
         addBtn.textContent = "+";
         addBtn.classList.add("btn");
         addBtn.id = "addBtn";
-        addBtn.onclick = () => addTaskCard.classList.contains("hide") ? addTaskCard.classList.remove("hide") : addTaskCard.classList.add("hide");
+        addBtn.onclick = () => {
+            addTaskCard.classList.contains("hide") ? addTaskCard.classList.remove("hide") : addTaskCard.classList.add("hide")
+            document.body.classList.add("blur");
+        };
         sidebar.appendChild(addBtn);
 
         const tasks = document.createElement("div");
@@ -80,6 +76,7 @@ class Page {
         const detailsCard = document.createElement("div");
         detailsCard.classList.add("detailsCard");
         detailsCard.classList.add("hide");
+        detailsCard.classList.add("pop-up");
 
         ["project", "title", "due_date", "detail"].forEach((name) => {
             const info = document.createElement("div");
@@ -101,6 +98,7 @@ class Page {
     addTaskCard() {
         const addTaskCard = document.createElement("div");
         addTaskCard.classList.add("addTaskCard");
+        addTaskCard.classList.add("pop-up");
         addTaskCard.classList.add("hide");
 
         const addNewHeader = document.createElement("div");
@@ -111,7 +109,7 @@ class Page {
         title.id = "add-new-text";
         title.textContent = "Add new..";
         addNewHeader.appendChild(title);
-
+        
         const button_wrapper = document.createElement("div");
         button_wrapper.classList.add("add_buttons");
         addNewHeader.appendChild(button_wrapper);
@@ -119,20 +117,34 @@ class Page {
         const addTaskBtn = document.createElement("button");
         addTaskBtn.classList.add("btn");
         addTaskBtn.textContent = "Task";
+        addTaskBtn.onclick = () => {
+            const newForm = this.#taskForm(addTaskCard);
+            addTaskCard.removeChild(form);
+            addTaskCard.appendChild(newForm);
+            form = newForm;
+            
+        };
         button_wrapper.appendChild(addTaskBtn);
 
         const addProjectBtn = document.createElement("button");
         addProjectBtn.classList.add("btn");
         addProjectBtn.textContent = "Project";
+        addProjectBtn.onclick = () => {
+            let newForm = this.#projectForm(addTaskCard);
+            addTaskCard.removeChild(form);
+            addTaskCard.appendChild(newForm);
+            form = newForm;
+        }
         button_wrapper.appendChild(addProjectBtn);
-        
-        const _sideBar =  document.createElement("div");
-        _sideBar.classList.add("sideBar");
-        addTaskCard.appendChild(_sideBar)
 
-        const form = document.createElement("form");
-        form.id = "addTaskForm"
+        let form = this.#taskForm();
         addTaskCard.appendChild(form);
+        
+        return addTaskCard;
+    }
+
+    #taskForm(addTaskCard) {
+        const form = document.createElement("form");
 
         const inputs = []
         inputs.push(["Title", "title", "text", true])
@@ -160,12 +172,35 @@ class Page {
         }
 
         form.appendChild(submitBtn);
-        
-        return addTaskCard;
+
+        return form;
     }
 
+    #projectForm(addTaskCard) {
+        const form = document.createElement("form");
+
+        const newInput = this.createInput("Project Name:", "projectName", "text", true);
+        form.appendChild(newInput);
+
+        const submitBtn = document.createElement("button");
+        submitBtn.classList.add("btn");
+        submitBtn.textContent = "Add";
+        form.appendChild(submitBtn);
+        
+        form.onsubmit = (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const projectName = formData.get("projectName");
+            toDoList.createProject(projectName);
+            toDoList.renderProjects();
+            //reset form
+            form.reset();
+            addTaskCard.classList.add("hide");
+        };
+
+        return form;
+    }
     createInput(title, id, type, isRequired) {
-        console.log(`Title: ${title} ID: ${id} type: ${type}`)
         const wrapper = document.createElement("div");
 
         const label = document.createElement("label")

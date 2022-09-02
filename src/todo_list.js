@@ -1,4 +1,5 @@
 import { format, isToday, isThisWeek } from "date-fns";
+import { th } from "date-fns/locale";
 import _deleteIcon from "./icons/trash.svg"
 
 
@@ -24,6 +25,7 @@ class Task {
         task.appendChild(leftTaskPanel);
 
         const checkComplete = document.createElement("input");
+        checkComplete.classList.add("checkMark");
         checkComplete.type = "checkbox";
         checkComplete.name = checkComplete;
         checkComplete.id = checkComplete;
@@ -36,6 +38,10 @@ class Task {
         title.textContent = this.title;
         leftTaskPanel.appendChild(title);
 
+        const rightTaskPanel = document.createElement("div");
+        rightTaskPanel.classList.add("right-task-panel");
+        task.appendChild(rightTaskPanel);
+
         const textDueDate = document.createElement("div");
         textDueDate.classList.add("textDueDate");
         textDueDate.textContent = this.dueDate;
@@ -44,7 +50,7 @@ class Task {
             textDueDate.classList.add("hide");
             inputDueDate.classList.remove("hide");
         };
-        task.appendChild(textDueDate);
+        rightTaskPanel.appendChild(textDueDate);
 
         const inputDueDate = document.createElement("input");
         inputDueDate.classList.add("inputDueDate");
@@ -52,13 +58,13 @@ class Task {
         inputDueDate.type = "date";
         inputDueDate.value = this.dueDate;
         inputDueDate.onchange = () => this.#changeDueDate(inputDueDate, textDueDate);
-        task.appendChild(inputDueDate);
+        rightTaskPanel.appendChild(inputDueDate);
         
         const detailBtn = document.createElement("button");
         detailBtn.classList.add("btn");
         detailBtn.textContent = "DETAILS"
         detailBtn.onclick = () => this.#showDetail();
-        task.appendChild(detailBtn);
+        rightTaskPanel.appendChild(detailBtn);
 
         const deleteIcon = new Image();
         deleteIcon.src = _deleteIcon;
@@ -68,7 +74,7 @@ class Task {
             this.toDoList.removeTask(this, this.projectName)
             this.toDoList.getProjectTasks(this.toDoList.currentProject);
         }
-        task.appendChild(deleteIcon)
+        rightTaskPanel.appendChild(deleteIcon)
 
         return task;
     }
@@ -76,12 +82,23 @@ class Task {
     #showDetail() {
         const detailTab = document.querySelector(".detailsCard");
         detailTab.classList.contains("hide") ? detailTab.classList.remove("hide") : detailTab.classList.add("hide");
+
+        const project = document.querySelector(".details-tab_project");
+        project.lastChild.textContent = this.projectName;
+
+        const title = document.querySelector(".details-tab_title");
+        title.lastChild.textContent = this.title;
+
+        const due_date = document.querySelector(".details-tab_due_date");
+        due_date.lastChild.textContent = format(this.dueDate, 'dd/MM/yyyy');
+
+        const desc = document.querySelector(".details-tab_detail");
+        desc.lastChild.textContent = this.description;
     }
 
     #completeTask() {
         this.done = !this.done;
         this.#logTask();
-
     }
 
     #changeDueDate(inputDueDate, textDueDate) {
@@ -162,6 +179,45 @@ class ToDoList {
         }
         tasks.forEach(task => {
             tasksElement.appendChild(task.htmlElement);
+        });
+    }
+
+    renderProjects(reset=true) {
+        const projects = document.querySelector(".projects");
+        if (reset) {
+            projects.innerHTML = "";
+        }
+        this.getProjectNames(true).forEach((projectName) => {
+            const project = document.createElement("button");
+            project.classList.add("projectBtn");
+            project.classList.add("btn");
+            project.textContent = projectName;
+            project.onmouseover = () => {
+                deleteIcon.classList.remove("hide");
+            }
+            project.onmouseout = () => {
+                deleteIcon.classList.add("hide");
+            }
+
+            const deleteIcon = new Image();
+            deleteIcon.src = _deleteIcon;
+            deleteIcon.classList.add("hide");
+            deleteIcon.onclick = () => {
+                for (let i = 0; i < this.projects.length; i++) {
+                    if (this.projects[i].name === projectName) {
+                        this.projects.splice(i, 1);
+                        this.renderProjects();
+                    }
+                }
+            };
+            project.appendChild(deleteIcon);
+
+            project.onclick = () => {
+                this.currentProject = projectName;
+                this.getProjectTasks(projectName);
+            }
+            
+            projects.appendChild(project);
         });
     }
 
