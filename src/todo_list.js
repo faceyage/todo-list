@@ -123,6 +123,7 @@ class ToDoList {
                     if (this.projects[i].name === projectName) {
                         this.projects.splice(i, 1);
                         this.renderProjects();
+                        this.saveLocalStorage();
                     }
                 }
             };
