@@ -61,9 +61,6 @@ main {
     box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.75);
 }
 
-.btn image:hover {
-}
-
 .btn {
         background-color: var(--third-color);
     color: white;
@@ -123,6 +120,7 @@ main {
 
 .addTaskCard input {
     border-radius: 1rem;
+    padding: 2px 7px;
 }
 
 .addTaskCard > .sidebar {
