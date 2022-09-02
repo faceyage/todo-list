@@ -80,6 +80,9 @@ class Task {
     }
 
     #showDetail() {
+        const content = document.querySelector(".content");
+        content.classList.add("blur")
+        content.classList.add("disable");
         const detailTab = document.querySelector(".detailsCard");
         detailTab.classList.contains("hide") ? detailTab.classList.remove("hide") : detailTab.classList.add("hide");
 

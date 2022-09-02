@@ -1,6 +1,5 @@
 import "./style.css";
 import ToDoList from "./todo_list";
-import { add, addDays } from "date-fns";
 
 class Page {
     renderComponents() {
@@ -62,8 +61,10 @@ class Page {
         addBtn.classList.add("btn");
         addBtn.id = "addBtn";
         addBtn.onclick = () => {
-            addTaskCard.classList.contains("hide") ? addTaskCard.classList.remove("hide") : addTaskCard.classList.add("hide")
-            document.body.classList.add("blur");
+            addTaskCard.classList.remove("hide");
+            const content = document.querySelector(".content");
+            content.classList.add("blur");
+            content.classList.add("disable");
         };
         sidebar.appendChild(addBtn);
 
@@ -77,6 +78,18 @@ class Page {
         detailsCard.classList.add("detailsCard");
         detailsCard.classList.add("hide");
         detailsCard.classList.add("pop-up");
+        const exitBtn = document.createElement("div");
+        exitBtn.classList.add("exitBtn");
+        exitBtn.classList.add("details");
+        exitBtn.textContent = "X";
+        exitBtn.onclick = () => {
+            const content = document.querySelector(".content");
+            content.classList.remove("blur");
+            content.classList.remove("disable");
+
+            detailsCard.classList.add("hide");
+        };
+        detailsCard.appendChild(exitBtn);
 
         ["project", "title", "due_date", "detail"].forEach((name) => {
             const info = document.createElement("div");
@@ -104,6 +117,19 @@ class Page {
         const addNewHeader = document.createElement("div");
         addNewHeader.classList.add("header");
         addTaskCard.appendChild(addNewHeader);
+        
+        const exitBtn = document.createElement("div");
+        exitBtn.classList.add("exitBtn");
+        exitBtn.classList.add("addNew");
+        exitBtn.textContent = "X";  
+        exitBtn.onclick = () => {
+            const content = document.querySelector(".content");
+            content.classList.remove("blur");
+            content.classList.remove("disable");
+
+            addTaskCard.classList.add("hide");
+        }
+        addNewHeader.appendChild(exitBtn);
 
         const title = document.createElement("div");
         title.id = "add-new-text";
@@ -122,7 +148,6 @@ class Page {
             addTaskCard.removeChild(form);
             addTaskCard.appendChild(newForm);
             form = newForm;
-            
         };
         button_wrapper.appendChild(addTaskBtn);
 
@@ -133,6 +158,7 @@ class Page {
             let newForm = this.#projectForm(addTaskCard);
             addTaskCard.removeChild(form);
             addTaskCard.appendChild(newForm);
+
             form = newForm;
         }
         button_wrapper.appendChild(addProjectBtn);
@@ -143,7 +169,7 @@ class Page {
         return addTaskCard;
     }
 
-    #taskForm(addTaskCard) {
+    #taskForm() {
         const form = document.createElement("form");
 
         const inputs = []
@@ -156,6 +182,23 @@ class Page {
             form.appendChild(newInput);
         });
 
+        const wrapper = document.createElement("div");
+        form.appendChild(wrapper);
+        ["low", "medium", "high"].forEach((priority) => {
+            const label = document.createElement("label");
+            label.setAttribute("for", priority);
+            label.textContent = priority;
+            wrapper.appendChild(label);
+
+            const input = document.createElement("input");
+            input.type = "radio";
+            input.id = priority;
+            input.value = priority;
+            input.name = "priority";
+            wrapper.appendChild(input);
+        })
+
+
         const submitBtn = document.createElement("button");
         submitBtn.classList.add("btn");
         submitBtn.textContent = "Add";
@@ -165,10 +208,16 @@ class Page {
             const title = formData.get("title");
             const desc = formData.get("desc");
             const date = formData.get("dueDate");
-            toDoList.createTask(title, desc, date, "high");
+            const priority = formData.get("priority");
+
+            toDoList.createTask(title, desc, date, priority ? priority : "high");
             //reset form
             form.reset();
+            const content = document.querySelector(".content");
+            const addTaskCard = document.querySelector(".addTaskCard")
             addTaskCard.classList.add("hide");
+            content.classList.remove("blur");
+            content.classList.remove("disable");
         }
 
         form.appendChild(submitBtn);
@@ -176,7 +225,7 @@ class Page {
         return form;
     }
 
-    #projectForm(addTaskCard) {
+    #projectForm() {
         const form = document.createElement("form");
 
         const newInput = this.createInput("Project Name:", "projectName", "text", true);
@@ -195,6 +244,10 @@ class Page {
             toDoList.renderProjects();
             //reset form
             form.reset();
+            const content = document.querySelector(".content")
+            content.classList.remove("blur");
+            content.classList.remove("disable");
+            const addTaskCard = document.querySelector(".addTaskCard")
             addTaskCard.classList.add("hide");
         };
 
@@ -223,16 +276,19 @@ class Page {
 
 
 function addSomeTasks(toDoList) {
-    toDoList.createTask("Cook Dinner", "Do the math homework page 126 - 205", "2022/09/01", "high", true);
-    toDoList.createTask("Do Bath", "Do the math homework page 126 - 205", "2022/09/01", "high", true);
-    toDoList.createTask("Math Homework", "Do the math homework page 126 - 205", "2022/08/30", "low");
-    toDoList.createTask("Clean the House", "Do the math homework page 126 - 205", "2022/09/02", "medium");
-    toDoList.createTask("10 Push-UP", "Do the math homework page 126 - 205", "2022/09/16", "high", false, "GYM");
-    toDoList.createTask("Make JOY", "Do the math homework page 126 - 205", "2022/09/16", "high",false, "Study");
+    toDoList.createTask("Cook Dinner", "Cook the dinner at 6pm", "2022/09/02", "low", true);
+    toDoList.createTask("Clean the house", "Clean the house desc", "2022/09/01", "high", true);
+    toDoList.createTask("Math Homework", "Do the math homework page 126 - 205", "2022/08/30", "low", "Study");
+    toDoList.createTask("Take the dog for a walk", "Don't forget to drink water before!", "2022/09/02", "high");
+    toDoList.createTask("10 Push-UP", "Do 10 push-up!", "2022/09/03", "high", false, "GYM");
+    toDoList.createTask("Study Javascript", "Study on objects, variables", "2022/09/16", "medium",false, "Study");
 }
 const toDoList = new ToDoList();
 toDoList.createProject("Study");
 toDoList.createProject("GYM");
 const page = new Page();
 page.renderComponents();
+
 addSomeTasks(toDoList);
+
+
