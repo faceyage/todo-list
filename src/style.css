@@ -61,8 +61,11 @@ main {
     box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.75);
 }
 
+.btn image:hover {
+}
+
 .btn {
-    background-color: var(--third-color);
+        background-color: var(--third-color);
     color: white;
     border-radius: 0.5rem;
     padding: 15px 15px 15px 20px;
@@ -85,16 +88,19 @@ main {
     margin-top: 20px;
 }
 
-/* Add task card */
+.projectBtn {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* create card */
 
 .addTaskCard {
     background-color: var(--primary-color);
     width: 800px;
     height: 400px;
 
-    position: absolute;
-    left: 30%;
-    top: 30%;
+    
     border-radius: 1rem;
 }
 
@@ -142,6 +148,28 @@ form > button {
     width: 70px;
 }
 
+/* details card */
+
+
+.detailsCard {
+    font-size: 20px;
+    width: 600px;
+    height: 300px;
+    padding: 50px;
+    border-radius: 2rem;
+    background-color: var(--primary-color);
+}
+
+.detailsCard > div {
+    margin-bottom: 5px;
+    /* border: 3px solid black; */
+}
+
+.detailsCard > div > span:first-child {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
 /* project buttons */
 
 .projectsTitle {
@@ -172,15 +200,15 @@ form > button {
     gap: 10px;
 }
 
-.detailsCard {
-    font-size: 20px;
-    width: 500px;
-    height: 300px;
-    padding: 50px;
-    background-color: var(--primary-color);
-    position: absolute;
-    top: 30%;
-    left: 40%;
+.right-task-panel {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.left-task-panel {
+    display: flex;
+    align-items: center;
 }
 
 .task .btn {
@@ -221,4 +249,16 @@ form > button {
 
 .low {
 	box-shadow: 5px 5px 5px 0px #0CFF24;
+}
+
+body > .pop-up {
+    position: absolute;
+    left: 30%;
+    top: 30%;
+    /* filter: blur(7px); */
+    filter: 0;
+}
+
+.blur {
+    filter: blur(6px);
 }
