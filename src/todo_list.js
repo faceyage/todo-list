@@ -23,7 +23,7 @@ class ToDoList {
         for (let i = 0; i < projects.length; i++) {
             //create project first
             if (!this.isProjectExist(projects[i].name)) {
-                console.log(`Project not exist project creating! ${projects[i].name}`)
+                // console.log(`Project not exist project creating! ${projects[i].name}`)
                 this.createProject(projects[i].name);
             }
             for (let j = 0; j < projects[i].tasks.length; j++) {
@@ -32,7 +32,6 @@ class ToDoList {
                 projects[i].tasks[j] = newTask;
             }
         }
-        console.log(projects)
     }
 
     createProject(name) {
@@ -118,6 +117,7 @@ class ToDoList {
             const deleteIcon = new Image();
             deleteIcon.src = _deleteIcon;
             deleteIcon.classList.add("hide");
+            deleteIcon.classList.add("deleteIcon");
             deleteIcon.onclick = () => {
                 for (let i = 0; i < this.projects.length; i++) {
                     if (this.projects[i].name === projectName) {
@@ -176,7 +176,6 @@ class ToDoList {
                 }
             })
         }
-        console.log(tasks);
         this.renderTasks(tasks);
         // return tasks;
     }

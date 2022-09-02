@@ -62,7 +62,8 @@ main {
 }
 
 .btn {
-        background-color: var(--third-color);
+    cursor: pointer;
+    background-color: var(--third-color);
     color: white;
     border-radius: 0.5rem;
     padding: 15px 15px 15px 20px;
@@ -83,6 +84,10 @@ main {
     font-weight: bold;
 
     margin-top: 20px;
+}
+
+.deleteIcon {
+    cursor: pointer;
 }
 
 .projectBtn {

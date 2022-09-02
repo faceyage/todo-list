@@ -65,8 +65,8 @@ class Task {
 
         const deleteIcon = new Image();
         deleteIcon.src = _deleteIcon;
+        deleteIcon.classList.add("deleteIcon");
         deleteIcon.onclick = () => {
-            console.log("remove called for");
             this.#logTask();
             toDoList.removeTask(this, this.projectName)
             toDoList.getProjectTasks(toDoList.currentProject);
