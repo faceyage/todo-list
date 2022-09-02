@@ -284,11 +284,14 @@ function addSomeTasks(toDoList) {
     toDoList.createTask("Study Javascript", "Study on objects, variables", "2022/09/16", "medium",false, "Study");
 }
 const toDoList = new ToDoList();
-toDoList.createProject("Study");
-toDoList.createProject("GYM");
+// toDoList.createProject("Study");
+// toDoList.createProject("GYM");
 const page = new Page();
 page.renderComponents();
 
-addSomeTasks(toDoList);
-
-
+if (!localStorage.getItem('projects')) {
+    addSomeTasks(toDoList);
+} else {
+    toDoList.loadLocalStorage();
+}
+export {toDoList}
